@@ -1,25 +1,215 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.9.34607.119
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLyHoaDonTienDien", "QuanLyHoaDonTienDien\QuanLyHoaDonTienDien.csproj", "{B41CAFEC-104A-4271-AB0E-EF6D56AC92B0}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B41CAFEC-104A-4271-AB0E-EF6D56AC92B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B41CAFEC-104A-4271-AB0E-EF6D56AC92B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B41CAFEC-104A-4271-AB0E-EF6D56AC92B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B41CAFEC-104A-4271-AB0E-EF6D56AC92B0}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {CFBEB247-7AB5-498A-A888-67E1DCBE2C0C}
-	EndGlobalSection
-EndGlobal
+    using System;
+    using System.Collections.Generic;
+
+    namespace QuanLyHoaDonTienDien
+    {
+        // Lớp chứa thông tin chung của một hoá đơn
+        class HoaDonTienDien
+        {
+            public string MaKH { get; set; }
+            public string HoTen { get; set; }
+            public DateTime NgayRaHoaDon { get; set; }
+            public double ThanhTien { get; set; }
+
+            // Phương thức ảo để tính thành tiền
+            public virtual void TinhThanhTien() { }
+
+            // Phương thức ảo để in thông tin hoá đơn
+            public virtual void InThongTin()
+            {
+                Console.WriteLine("Ma khach hang: " + MaKH);
+                Console.WriteLine("Ho ten: " + HoTen);
+                Console.WriteLine("Ngay ra hoa don: " + NgayRaHoaDon.ToString("dd/MM/yyyy"));
+                Console.WriteLine("Thanh tien: " + ThanhTien);
+            }
+        }
+
+        // Lớp chứa thông tin của hoá đơn khách hàng Việt Nam
+        class HoaDonVN : HoaDonTienDien
+        {
+            public string DoiTuong { get; set; }
+            public double SoLuong { get; set; }
+            public double DonGia { get; set; }
+
+            // Ghi đè phương thức để tính thành tiền cho khách hàng Việt Nam
+            public override void TinhThanhTien()
+            {
+                const double dinhMuc1 = 50;
+                const double dinhMuc2 = 100;
+                const double dinhMuc3 = 200;
+                const double gia1 = 1000;
+                const double gia2 = 1200;
+                const double gia3 = 1500;
+
+                if (SoLuong <= dinhMuc1)
+                {
+                    ThanhTien = SoLuong * DonGia;
+                }
+                else if (SoLuong <= dinhMuc2)
+                {
+                    ThanhTien = dinhMuc1 * DonGia + (SoLuong - dinhMuc1) * gia1;
+                }
+                else if (SoLuong <= dinhMuc3)
+                {
+                    ThanhTien = dinhMuc1 * DonGia + (dinhMuc2 - dinhMuc1) * gia1 + (SoLuong - dinhMuc2) * gia2;
+                }
+                else
+                {
+                    ThanhTien = dinhMuc1 * DonGia + (dinhMuc2 - dinhMuc1) * gia1 + (dinhMuc3 - dinhMuc2) * gia2 + (SoLuong - dinhMuc3) * gia3;
+                }
+            }
+
+            // Ghi đè phương thức để in thông tin cho khách hàng Việt Nam
+            public override void InThongTin()
+            {
+                base.InThongTin();
+                Console.WriteLine("Doi tuong khach hang: " + DoiTuong);
+                Console.WriteLine("So luong (so KW tieu thu): " + SoLuong);
+            }
+        }
+
+        // Lớp chứa thông tin của hoá đơn khách hàng nước ngoài
+        class HoaDonNN : HoaDonTienDien
+        {
+            public string QuocTich { get; set; }
+            public double SoLuong { get; set; }
+            public double DonGia { get; set; }
+
+            // Ghi đè phương thức để tính thành tiền cho khách hàng nước ngoài
+            public override void TinhThanhTien()
+            {
+                const double gia1 = 1000;
+                const double gia2 = 1200;
+                const double gia3 = 1500;
+                const double giaNuocNgoai = 2000;
+
+                if (SoLuong <= 50)
+                {
+                    ThanhTien = SoLuong * gia1;
+                }
+                else if (SoLuong <= 100)
+                {
+                    ThanhTien = 50 * gia1 + (SoLuong - 50) * gia2;
+                }
+                else if (SoLuong <= 200)
+                {
+                    ThanhTien = 50 * gia1 + 50 * gia2 + (SoLuong - 100) * gia3;
+                }
+                else
+                {
+                    ThanhTien = SoLuong * giaNuocNgoai;
+                }
+            }
+
+            // Ghi đè phương thức để in thông tin cho khách hàng nước ngoài
+            public override void InThongTin()
+            {
+                base.InThongTin();
+                Console.WriteLine("Quoc tich: " + QuocTich);
+                Console.WriteLine("So luong (so KW tieu thu): " + SoLuong);
+            }
+        }
+
+        class Program
+        {
+            static void Main(string[] args)
+            {
+                List<HoaDonTienDien> danhSachHoaDon = new List<HoaDonTienDien>();
+
+                int chon;
+                do
+                {
+                    Console.WriteLine("1. Khach hang Viet Nam");
+                    Console.WriteLine("2. Khach hang nuoc ngoai");
+                    Console.WriteLine("3. Tim kiem hoa don");
+                    Console.WriteLine("4. Sap xep hoa don");
+                    Console.WriteLine("5. In danh sach hoa don");
+                    Console.WriteLine("0. Thoat");
+                    Console.Write("Lua chon: ");
+                    chon = int.Parse(Console.ReadLine());
+
+                    switch (chon)
+                    {
+                        case 1:
+                            HoaDonVN hdVN = new HoaDonVN();
+                            Console.Write("Ma khach hang: ");
+                            hdVN.MaKH = Console.ReadLine();
+                            Console.Write("Ho ten: ");
+                            hdVN.HoTen = Console.ReadLine();
+                            Console.Write("Ngay ra hoa don (dd/MM/yyyy): ");
+                            hdVN.NgayRaHoaDon = DateTime.ParseExact(Console.ReadLine(), "dd/MM/yyyy", null);
+                            Console.Write("Doi tuong khach hang (sinh hoat/kinh doanh/san xuat): ");
+                            hdVN.DoiTuong = Console.ReadLine();
+                            Console.Write("So luong (so KW tieu thu): ");
+                            hdVN.SoLuong = double.Parse(Console.ReadLine());
+                            Console.Write("Don gia: ");
+                            hdVN.DonGia = double.Parse(Console.ReadLine());
+
+                            hdVN.TinhThanhTien();
+
+                            danhSachHoaDon.Add(hdVN);
+                            break;
+                        case 2:
+                            HoaDonNN hdNN = new HoaDonNN();
+                            Console.Write("Ma khach hang: ");
+                            hdNN.MaKH = Console.ReadLine();
+                            Console.Write("Ho ten: ");
+                            hdNN.HoTen = Console.ReadLine();
+                            Console.Write("Ngay ra hoa don (dd/MM/yyyy): ");
+                            hdNN.NgayRaHoaDon = DateTime.ParseExact(Console.ReadLine(), "dd/MM/yyyy", null);
+                            Console.Write("Quoc tich: ");
+                            hdNN.QuocTich = Console.ReadLine();
+                            Console.Write("So luong (so KW tieu thu): ");
+                            hdNN.SoLuong = double.Parse(Console.ReadLine());
+                            Console.Write("Don gia: ");
+                            hdNN.DonGia = double.Parse(Console.ReadLine());
+
+                            hdNN.TinhThanhTien();
+
+                            danhSachHoaDon.Add(hdNN);
+                            break;
+                    case 3:
+                        Console.Write("Nhap ma khach hang can tim kiem: ");
+                        string maKhachHangCanTim = Console.ReadLine();
+                        bool timThay = false;
+                        foreach (var hd in danhSachHoaDon)
+                        {
+                            if (hd.MaKH == maKhachHangCanTim)
+                            {
+                                Console.WriteLine("Tim thay hoa don:");
+                                hd.InThongTin();
+                                timThay = true;
+                                break;
+                            }
+                        }
+                        if (!timThay)
+                        {
+                            Console.WriteLine("Khong tim thay hoa don voi ma khach hang {0}.", maKhachHangCanTim);
+                        }
+                        break;
+                    case 4:
+                        danhSachHoaDon.Sort((hd1, hd2) => hd1.MaKH.CompareTo(hd2.MaKH));
+                        Console.WriteLine("Danh sach hoa don sau khi sap xep theo ma khach hang:");
+                        foreach (var hd in danhSachHoaDon)
+                        {
+                            hd.InThongTin();
+                            Console.WriteLine("--------------------");
+                        }
+                        break;
+
+                    case 5:
+                            Console.WriteLine("Danh sach hoa don:");
+                            foreach (var hd in danhSachHoaDon)
+                            {
+                                hd.InThongTin();
+                                Console.WriteLine("--------------------");
+                            }
+                            break;
+                        default:
+                            Console.WriteLine("Tam biet quy khach.");
+                            break;
+                    }
+                } while (chon != 0);
+            }
+        }
+    }
